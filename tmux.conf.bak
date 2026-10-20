@@ -1,0 +1,98 @@
+# ====== Terminal & Colors ====== #
+set -g default-terminal "tmux-256color"
+set -sg terminal-overrides ",*:RGB"
+
+# ====== Core Settings ====== #
+set -g mouse on
+set -g renumber-windows on
+set -g base-index 1
+set -g pane-base-index 1
+set -g status-position top
+set -g focus-events on
+set -g escape-time 0
+set -g history-limit 50000
+set -g display-time 2000
+
+# ====== Prefix ====== #
+unbind C-b
+set -g prefix C-Space
+bind C-Space send-prefix
+
+# ====== Keybindings ====== #
+bind r source-file ~/.config/tmux/tmux.conf \; display "Config reloaded"
+
+bind -n M-H previous-window
+bind -n M-L next-window
+
+bind | split-window -h -c "#{pane_current_path}"
+bind - split-window -v -c "#{pane_current_path}"
+bind '"' split-window -v -c "#{pane_current_path}"
+bind % split-window -h -c "#{pane_current_path}"
+
+# vi-mode copy
+setw -g mode-keys vi
+bind-key -T copy-mode-vi v send-keys -X begin-selection
+bind-key -T copy-mode-vi C-v send-keys -X rectangle-toggle
+bind-key -T copy-mode-vi y send-keys -X copy-selection-and-cancel
+
+# ====== Modern Minimal Theme ====== #
+# Color palette — soft, refined, works in light & dark terminals
+# Primary:    #7aa2f7 (soft blue)
+# Accent:     #bb9af7 (lavender)
+# Muted:      #565f89 (cool gray)
+# Background: default (transparent — inherits terminal bg)
+# Foreground: #c0caf5 (soft white)
+# Surface:    #1a1b26 (deep navy, only for active highlights)
+
+# --- Pane borders --- #
+set -g pane-border-style "fg=#3b4261"
+set -g pane-active-border-style "fg=#7aa2f7"
+set -g pane-border-lines single
+
+# --- Status bar --- #
+set -g status on
+set -g status-interval 5
+set -g status-justify left
+set -g status-style "bg=default,fg=#c0caf5"
+set -g status-left-length 40
+set -g status-right-length 100
+
+# Left: session name with a subtle marker
+set -g status-left "#[fg=#7aa2f7,bold] #S #[fg=#3b4261]│ "
+
+# Right: directory + time, understated
+set -g status-right "#[fg=#565f89]#{b:pane_current_path} #[fg=#3b4261]│ #[fg=#c0caf5]%H:%M "
+
+# --- Windows --- #
+setw -g window-status-format "#[fg=#565f89] #I·#W "
+setw -g window-status-current-format "#[fg=#bb9af7,bold] #I·#W "
+setw -g window-status-separator ""
+setw -g window-status-activity-style "fg=#e0af68"
+
+# --- Messages & mode --- #
+set -g message-style "fg=#c0caf5,bg=default"
+set -g message-command-style "fg=#7aa2f7,bg=default"
+set -g mode-style "fg=#1a1b26,bg=#7aa2f7,bold"
+
+# --- Clock --- #
+setw -g clock-mode-colour "#7aa2f7"
+setw -g clock-mode-style 24
+
+# ====== Plugins (minimal set) ====== #
+set -g @plugin 'tmux-plugins/tpm'
+set -g @plugin 'tmux-plugins/tmux-sensible'
+set -g @plugin 'christoomey/vim-tmux-navigator'
+set -g @plugin 'tmux-plugins/tmux-yank'
+
+# Keep these but disable auto-restore (manual only)
+set -g @plugin 'tmux-plugins/tmux-resurrect'
+set -g @plugin 'tmux-plugins/tmux-continuum'
+set -g @resurrect-capture-pane-contents 'on'
+set -g @continuum-restore 'off'
+
+# image.nvim support
+set -gq allow-passthrough on
+set -g visual-activity off
+
+# ====== Initialize TPM (must be last) ====== #
+run '~/.tmux/plugins/tpm/tpm'
